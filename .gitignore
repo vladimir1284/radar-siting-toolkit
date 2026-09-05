@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+.DS_Store
+
+# Never commit FABDEM data (CC BY-NC-SA 4.0, non-commercial) or other raw DEM downloads.
+*.tif
+*.tiff
+!examples/**/*.tif

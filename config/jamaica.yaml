@@ -1,0 +1,11 @@
+# Example case config (Phase 4). Placeholder -- radars, DEM sources, importance layer,
+# and scan parameters for the Jamaica case go here once Phase 0 output exists.
+# See Plan_Tecnico_Radar_Siting_Toolkit.md, sections 8 and 9.
+
+radars: []
+dem:
+  sources: []  # e.g. GLO-30, FABDEM
+importance_layer: null
+scan:
+  earth_radius_factor_k: [1.0, 1.3333, 2.0]  # normal / 4/3 / superrefractive
+  tower_height_m: [10, 15, 20, 25, 30]

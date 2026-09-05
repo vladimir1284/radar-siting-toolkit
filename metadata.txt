@@ -1,0 +1,21 @@
+[general]
+name=Radar Siting Toolkit
+qgisMinimumVersion=3.28
+description=Coverage and siting analysis for weather radar networks: horizon-angle blockage, partial beam blockage (Bech et al. 2003), network coverage merit, and reproducibility manifests.
+version=0.0.1
+author=Ladetec
+email=vladimir.rodriguez@pinkzebrahome.com
+
+about=Radar Siting Toolkit answers one operational question: given a territory, a set of constraints, and a definition of what area matters, where should one or more weather radars be sited, and what will each configuration see? It computes terrain-horizon blockage and Bech partial-beam-blockage geometry from a DEM, in three modes: Evaluate (score candidate sites), Discover (merit raster over an eligible-terrain mask), and Network (joint coverage, redundancy, and residual gaps across multiple radars). It is not a rain-attenuation, propagation-anomaly, clutter, or cost model — see the README for explicit scope limits.
+
+tracker=https://github.com/vladimir1284/radar-siting-toolkit/issues
+repository=https://github.com/vladimir1284/radar-siting-toolkit
+homepage=https://github.com/vladimir1284/radar-siting-toolkit
+
+tags=radar,meteorology,siting,coverage,line of sight,DEM,QGIS Processing
+
+category=Analysis
+icon=icon.png
+experimental=True
+deprecated=False
+server=False
