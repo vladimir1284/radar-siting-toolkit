@@ -1,0 +1,12 @@
+-r requirements.txt
+
+# For tests and the Fase 0 validation notebook only (Nivel 2, section 7) --
+# never a plugin runtime dependency, see section 3.3.
+wradlib==2.9.6
+scipy==1.17.1
+matplotlib==3.11.1
+pytest
+jupyter==1.1.1
+nbclient==0.11.0
+nbformat==5.11.1
+ipykernel==7.3.0

@@ -1,0 +1,7 @@
+# Runtime deps for core/ used standalone (outside QGIS, e.g. from the notebook or tests).
+# Inside QGIS itself, numpy and GDAL already ship with the application -- this file is
+# NOT needed to run the plugin; see metadata.txt / section 3.3 of the plan.
+numpy==2.4.6
+pyproj==3.7.2
+rasterio==1.4.4
+PyYAML==6.0.3
