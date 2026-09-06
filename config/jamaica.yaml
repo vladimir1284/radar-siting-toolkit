@@ -2,7 +2,12 @@
 # and scan parameters for the Jamaica case go here once Phase 0 output exists.
 # See Plan_Tecnico_Radar_Siting_Toolkit.md, sections 8 and 9.
 
-radars: []
+radars:
+  - name: "Cooper's Hill Doppler Weather Radar, Saint Andrew Parish"
+    lat: 18.07330822439374
+    lon: -76.8527864446781
+    ground_elevation_m: 765.6  # FABDEM bare-earth sample at this point, see core.dem
+    tower_height_m: 30  # measured antenna height AGL, existing structure, clears tallest tree on site
 dem:
   sources:
     - path: examples/jamaica/glo30_jamaica.tif
