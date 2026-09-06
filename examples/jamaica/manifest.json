@@ -1,0 +1,27 @@
+{
+  "timestamp_utc": "2026-09-06T01:31:49.578524+00:00",
+  "plugin_version": "0.0.1",
+  "numpy_version": "2.4.6",
+  "gdal_version": "3.10.3",
+  "parameters": {
+    "lon0": -76.65,
+    "lat0": 18.05,
+    "tower_height_m": 20.0,
+    "earth_radius_factor_k": 1.3333333333333333,
+    "elevation_deg": 0.5,
+    "beamwidth_deg": 1.0,
+    "max_range_m": 15000.0,
+    "range_res_m": 30.0,
+    "azimuth_step_deg": 2.0
+  },
+  "input_layers": {
+    "GLO-30": {
+      "path": "/home/node/workspace/radar-siting-toolkit/examples/jamaica/glo30_jamaica.tif",
+      "sha256": "c35834624023bd1b117dc0faca72471df14ca7fd79a4d2308bd98edebd2230ff"
+    },
+    "FABDEM": {
+      "path": "/home/node/workspace/radar-siting-toolkit/examples/jamaica/fabdem_jamaica.tif",
+      "sha256": "308dff3ac5431e7ae5d527f3ff74bb7a9a64f233d76e21a56f8b81a5323d3b15"
+    }
+  }
+}

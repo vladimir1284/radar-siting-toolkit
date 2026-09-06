@@ -4,7 +4,25 @@
 
 radars: []
 dem:
-  sources: []  # e.g. GLO-30, FABDEM
+  sources:
+    - path: examples/jamaica/glo30_jamaica.tif
+      label: GLO-30
+      vertical_datum: EGM2008 geoid
+      # Copernicus GLO-30 (COP30), OpenTopography globaldem API, cropped to
+      # the island: south=17.65 north=18.55 west=-78.4 east=-76.2. Does not
+      # cover Cuba/Haiti terrain within the 250 km radar analysis range (see
+      # Plan_Tecnico_Radar_Siting_Toolkit.md section 3.4) -- traded off to
+      # keep the repo checkout small. No nodata cells in the extent.
+    - path: examples/jamaica/fabdem_jamaica.tif
+      label: FABDEM
+      vertical_datum: EGM2008 geoid
+      # FABDEM V1-2, tile group N10W080-N20W070, data.bris.ac.uk, mosaicked
+      # from the 5 tiles covering Jamaica and cropped to the same bbox as
+      # GLO-30 above. nodata=-9999 over ocean cells (use nodata_policy per
+      # core.dem, never silently 0/NaN). DEV/VALIDATION USE ONLY: CC BY-NC-SA
+      # 4.0, non-commercial -- per Plan_Tecnico_Radar_Siting_Toolkit.md
+      # section 3.5, resolve licensing in writing before this feeds any
+      # paid deliverable, and never commit this file to the repository.
 importance_layer: null
 scan:
   earth_radius_factor_k: [1.0, 1.3333, 2.0]  # normal / 4/3 / superrefractive

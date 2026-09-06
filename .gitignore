@@ -8,3 +8,7 @@ __pycache__/
 *.tif
 *.tiff
 !examples/**/*.tif
+
+# Jamaica case DEM downloads (GLO-30, FABDEM) stay local, not in the repo.
+examples/jamaica/*.tif
+examples/jamaica/*.tiff
