@@ -105,3 +105,19 @@ class Dem:
 
     def __exit__(self, *exc):
         self.close()
+
+
+def raster_cell_centers_lonlat(transform, crs, height, width):
+    """WGS84 (lon, lat) of every cell center of a raster grid.
+
+    Used by alg_discover / alg_network (Fase 2) to turn a mask or importance
+    raster's own grid into query points for the radar engine, which works in
+    WGS84 lon/lat throughout (section 3.4). Returns two (height, width)
+    arrays, lons and lats.
+    """
+    rows, cols = np.indices((height, width))
+    xs, ys = rasterio.transform.xy(transform, rows.ravel(), cols.ravel(), offset="center")
+    lons, lats = warp_transform(crs, "EPSG:4326", xs, ys)
+    lons = np.asarray(lons).reshape(height, width)
+    lats = np.asarray(lats).reshape(height, width)
+    return lons, lats

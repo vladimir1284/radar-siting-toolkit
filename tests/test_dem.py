@@ -3,7 +3,7 @@ import pytest
 import rasterio
 from rasterio.transform import from_origin, xy as transform_xy
 
-from core.dem import Dem, DemNodataError
+from core.dem import Dem, DemNodataError, raster_cell_centers_lonlat
 
 NODATA_VALUE = -9999.0
 
@@ -150,3 +150,19 @@ def test_multi_band_raster_rejected(tmp_path):
 
     with pytest.raises(ValueError):
         Dem(str(path))
+
+
+def test_raster_cell_centers_lonlat_matches_known_cells(tmp_path):
+    values = np.full((4, 4), 100.0, dtype="float32")
+    path = tmp_path / "dem.tif"
+    transform = _write_synthetic_dem(path, values)
+
+    with Dem(str(path)) as dem:
+        lons, lats = raster_cell_centers_lonlat(dem.transform, dem.crs, height=4, width=4)
+
+    assert lons.shape == (4, 4)
+    assert lats.shape == (4, 4)
+    for row, col in [(0, 0), (1, 2), (3, 3)]:
+        expected_lon, expected_lat = _cell_lonlat(transform, row, col)
+        assert lons[row, col] == pytest.approx(expected_lon)
+        assert lats[row, col] == pytest.approx(expected_lat)
