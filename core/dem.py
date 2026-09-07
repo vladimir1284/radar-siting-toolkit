@@ -37,6 +37,10 @@ class Dem:
         if self.dataset.count != 1:
             raise ValueError(f"{path}: expected a single-band elevation raster, got {self.dataset.count} bands")
         self.nodata = self.dataset.nodata
+        # Read once: sample_lonlat is called once per azimuth (hundreds of times
+        # per sweep_site), and re-reading the full band from disk each call
+        # made a single site's sweep re-read a ~100 MB array hundreds of times.
+        self._band = self.dataset.read(1)
 
     @property
     def transform(self):
@@ -67,7 +71,7 @@ class Dem:
         rows = np.asarray(rows)
         cols = np.asarray(cols)
 
-        band = self.dataset.read(1)
+        band = self._band
         out_of_bounds = (
             (rows < 0) | (rows >= band.shape[0]) | (cols < 0) | (cols >= band.shape[1])
         )

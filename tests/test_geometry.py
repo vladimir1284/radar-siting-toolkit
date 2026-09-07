@@ -1,7 +1,8 @@
 import numpy as np
-from pyproj import Geod
+from pyproj import CRS, Geod
+from rasterio.transform import from_origin
 
-from core.geometry import ray_points, transformer_to_aeqd, transformer_from_aeqd
+from core.geometry import native_step, ray_points, transformer_to_aeqd, transformer_from_aeqd
 
 
 def test_ray_points_length_and_range_convention():
@@ -44,3 +45,27 @@ def test_aeqd_distance_matches_range():
 
     r = np.hypot(x, y)
     assert np.isclose(r, geodesic_dist, rtol=1e-3)
+
+
+def test_native_step_projected_crs_reads_transform_directly():
+    transform = from_origin(0, 4, 30, 30)  # 30 m pixels, already in meters
+    step = native_step(transform, CRS.from_proj4("+proj=aeqd +lat_0=18 +lon_0=-77 +datum=WGS84 +units=m +no_defs"))
+    assert step == 30.0
+
+
+def test_native_step_geographic_crs_converts_degrees_to_meters():
+    # GLO-30/FABDEM-like: 1 arcsecond pixels (~30 m) in EPSG:4326.
+    one_arcsec = 1.0 / 3600.0
+    transform = from_origin(-78.4, 18.55, one_arcsec, one_arcsec)
+    step = native_step(transform, CRS.from_epsg(4326), lat0=18.0)
+    assert 25.0 < step < 35.0  # ~30 m at this latitude, not ~0.0002778 (degrees misread as meters)
+
+
+def test_native_step_geographic_crs_requires_lat0():
+    transform = from_origin(-78.4, 18.55, 1.0 / 3600.0, 1.0 / 3600.0)
+    try:
+        native_step(transform, CRS.from_epsg(4326))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("expected ValueError when lat0 is missing for a geographic CRS")

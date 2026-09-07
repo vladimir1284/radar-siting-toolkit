@@ -55,7 +55,7 @@ def sweep_site(
     without recomputing the ray geometry.
     """
     if range_step_m is None:
-        range_step_m = native_step(dem.transform)
+        range_step_m = native_step(dem.transform, dem.crs, lat0=lat0)
 
     to_lonlat = transformer_from_aeqd(lon0, lat0)
     azimuths_deg = np.arange(0.0, 360.0, azimuth_step_deg)
@@ -121,7 +121,7 @@ def h_min_at_point(
     intervening terrain to accumulate a horizon over).
     """
     if range_step_m is None:
-        range_step_m = native_step(dem.transform)
+        range_step_m = native_step(dem.transform, dem.crs, lat0=radar_lat)
 
     to_xy = transformer_to_aeqd(radar_lon, radar_lat)
     x_q, y_q = to_xy.transform(query_lon, query_lat)
