@@ -11,7 +11,7 @@ class RadarSitingToolkitProvider(QgsProcessingProvider):
         return "radar_siting_toolkit"
 
     def name(self):
-        return "Radar Siting Toolkit"
+        return "LAMULA™ Radar Siting Toolkit"
 
     def loadAlgorithms(self):
         self.addAlgorithm(EvaluateAlgorithm())

@@ -26,6 +26,8 @@ from qgis.core import (
     QgsFeatureSink,
     QgsField,
     QgsFields,
+    QgsGeometry,
+    QgsPointXY,
     QgsProcessing,
     QgsProcessingAlgorithm,
     QgsProcessingException,
@@ -60,6 +62,7 @@ class EvaluateAlgorithm(QgsProcessingAlgorithm):
     AZIMUTH_STEP_DEG = "AZIMUTH_STEP_DEG"
     BLOCKED_SECTOR_THRESHOLD = "BLOCKED_SECTOR_THRESHOLD"
     OUTPUT_SITES = "OUTPUT_SITES"
+    OUTPUT_RAYS = "OUTPUT_RAYS"
     OUTPUT_FOLDER = "OUTPUT_FOLDER"
 
     def tr(self, string):
@@ -189,6 +192,18 @@ class EvaluateAlgorithm(QgsProcessingAlgorithm):
             )
         )
         self.addParameter(
+            QgsProcessingParameterFeatureSink(
+                self.OUTPUT_RAYS,
+                self.tr(
+                    "Per-azimuth blockage rays (site to max range, style by "
+                    "cbb_at_max_range or min_clear_elev_deg)"
+                ),
+                type=QgsProcessing.TypeVectorLine,
+                optional=True,
+                createByDefault=True,
+            )
+        )
+        self.addParameter(
             QgsProcessingParameterFolderDestination(
                 self.OUTPUT_FOLDER, self.tr("Output folder (per-site CSV + manifest)")
             )
@@ -242,7 +257,26 @@ class EvaluateAlgorithm(QgsProcessingAlgorithm):
         if sink is None:
             raise QgsProcessingException(self.invalidSinkError(parameters, self.OUTPUT_SITES))
 
+        ray_fields = QgsFields()
+        for name, qvariant_type in (
+            ("site_name", QVariant.String),
+            ("azimuth_deg", QVariant.Double),
+            ("min_clear_elev_deg", QVariant.Double),
+            ("h_min_m", QVariant.Double),
+            ("cbb_at_max_range", QVariant.Double),
+        ):
+            ray_fields.append(QgsField(name, qvariant_type))
+        ray_sink, ray_dest_id = self.parameterAsSink(
+            parameters,
+            self.OUTPUT_RAYS,
+            context,
+            ray_fields,
+            QgsWkbTypes.LineString,
+            source.sourceCrs(),
+        )
+
         to_wgs84 = QgsCoordinateTransform(source.sourceCrs(), WGS84, context.transformContext())
+        from_wgs84 = QgsCoordinateTransform(WGS84, source.sourceCrs(), context.transformContext())
 
         dem_path = dem_layer.source()
         dem = Dem(dem_path, vertical_datum=vertical_datum or None)
@@ -316,6 +350,27 @@ class EvaluateAlgorithm(QgsProcessingAlgorithm):
                     cbb_edge, azimuth_step_deg, threshold=blocked_sector_threshold
                 )
 
+                if ray_sink is not None:
+                    for i, az in enumerate(out["azimuths_deg"]):
+                        end_lon = float(out["lons_deg"][i, -1])
+                        end_lat = float(out["lats_deg"][i, -1])
+                        ray_geom = QgsGeometry.fromPolylineXY(
+                            [QgsPointXY(lon, lat), QgsPointXY(end_lon, end_lat)]
+                        )
+                        ray_geom.transform(from_wgs84)
+                        ray_feature = QgsFeature(ray_fields)
+                        ray_feature.setGeometry(ray_geom)
+                        ray_feature.setAttributes(
+                            [
+                                site_label,
+                                float(az),
+                                math.degrees(float(out["theta_rad"][i, -1])),
+                                float(out["h_min_m"][i, -1]),
+                                float(out["cbb"][i, -1]),
+                            ]
+                        )
+                        ray_sink.addFeature(ray_feature, QgsFeatureSink.FastInsert)
+
                 azimuth_csv_path = os.path.join(output_folder, f"{_safe_filename(site_label)}.csv")
                 _write_azimuth_summary_csv(
                     azimuth_csv_path,
@@ -356,7 +411,10 @@ class EvaluateAlgorithm(QgsProcessingAlgorithm):
         )
         write_manifest(os.path.join(output_folder, "manifest.json"), manifest)
 
-        return {self.OUTPUT_SITES: dest_id, self.OUTPUT_FOLDER: output_folder}
+        result = {self.OUTPUT_SITES: dest_id, self.OUTPUT_FOLDER: output_folder}
+        if ray_dest_id is not None:
+            result[self.OUTPUT_RAYS] = ray_dest_id
+        return result
 
 
 def _safe_filename(label):

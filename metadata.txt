@@ -1,6 +1,6 @@
 [general]
-name=Radar Siting Toolkit
-qgisMinimumVersion=3.28
+name=LAMULA™ Radar Siting Toolkit
+qgisMinimumVersion=3.22
 description=Coverage and siting analysis for weather radar networks: horizon-angle blockage, partial beam blockage (Bech et al. 2003), network coverage merit, and reproducibility manifests.
 version=0.0.1
 author=Ladetec
