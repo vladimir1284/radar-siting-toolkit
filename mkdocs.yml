@@ -1,0 +1,30 @@
+site_name: Radar Siting Toolkit
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Methodology: methodology.md
+  - QGIS Algorithms: algorithms.md
+  - Core API Reference: core-reference.md
+  - Elevation Data & Configuration: data.md
+  - Scope & Status: status.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
